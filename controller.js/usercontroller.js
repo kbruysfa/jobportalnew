@@ -1,5 +1,4 @@
 const express=require('express')
-const App=express()
 const createuser=async(req,res)=>{
     const{fullname,phonenumber,email,location,coverlettor,gender}=req.body;
     if(!fullname||!phonenumber||!email||!location||!coverlettor||!gender||!password){

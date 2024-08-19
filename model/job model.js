@@ -62,5 +62,5 @@ let schema = new mongoose.Schema(
 );
 
 
-const job = mongoose.model("jobs", schema);
+const job = mongoose.model("job", schema);
 module.exports=job

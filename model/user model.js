@@ -38,6 +38,10 @@ let schema = new mongoose.Schema(
     data: Buffer,
     contentType: String
     },
+    cv: {
+      data: Buffer,
+      contentType: String
+      },
     roles:{
       type:string,
       default:'user'

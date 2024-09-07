@@ -1,5 +1,4 @@
-const express=require('express')
-const App=express()
+
 const createuser=async(req,res)=>{
     const user=new user({
         fullname:req.body.fullname,
@@ -12,7 +11,7 @@ const createuser=async(req,res)=>{
        res.statues(200).json({msg:'please inter the all the required field'})
     }
     try {
-        const user=await.newuser.save();
+        const user=await user.save();
         res.send.statues(200).json(user);
     } 
     catch (error) {
@@ -21,8 +20,9 @@ const createuser=async(req,res)=>{
 
 }
 const updateuser=async(req,res,next)=>{
-    const{id}=req.parms.id
-     const user=user.findbyIDandUPDATE({id,new:true})
+    const{id}=req.parms._id
+    const data=req.body
+     const user=user.findbyIDandUpdate({id,data,new:true})
     if(!user){
         res.statues(200).json('user does not exist')
     }
@@ -30,7 +30,7 @@ const updateuser=async(req,res,next)=>{
     res.statues(200).json(user)
 }
 const deleteuser=async(req,res,next)=>{
-    const{id}=req.parms.id
+    const{id}=req.parms._id
      const user=user.findbyIDandDELETE({id,new:true})
     if(!user){
         res.statues(200).json('user does not exist')
@@ -47,3 +47,4 @@ const getuser=async(req,res,next)=>{
     }
     res.statues(200).json(user)
 }
+module.exports ={deleteuser,getuser,updateuser,createuser}

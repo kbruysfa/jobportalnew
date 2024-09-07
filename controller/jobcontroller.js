@@ -1,4 +1,3 @@
-const job = require('../model/job model.js')
 const jobmodel=require('../model/job model.js')
 const createjobs=async(req,res)=>{
     const jobs=new job({ jobpostion:req.body.jobpostion,
@@ -28,28 +27,23 @@ try {
 }
 const updatejobs=async(req,res,next)=>{
     const _id=req.parms.id;
+    const jobs=job.findbyIDandUPDATE({_id,new:true})
     try {
-        const jobs=job.findByIdAndUpdate({_id,new:true})
-        if(!jobs){
-            res.statues(201).send($jobs+'jobs not found')
-        }
         await jobs.save()
         res.statues(201).json(jobs)
         res.statues(201).send($jobs+'updated successfully')
     } catch (err) {
-        res.statues(404).send('unable to update')
+        res.statues(404).send('unable to save')
     }
 }
 const deletejobs=async(req,res,next)=>{
     const _id=req.parms.id;
+    const jobs=job.findbyIDandUPDATE({_id,new:true})
     try {
-        const jobs=job.findByIdAndDelete({_id,new:true})
-        if(!jobs){
-            res.statues(201).send($jobs+'jobs not found')
-        }
         await jobs.save()
-        res.statues(201).send($new+'deleted successfully')
+        res.statues(201).json(jobs)
+        res.statues(201).send($jobs+'updated successfully')
     } catch (err) {
-        res.statues(404).send('unable to delete')
+        res.statues(404).send('unable to save')
     }
 }

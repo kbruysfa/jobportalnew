@@ -1,28 +1,37 @@
-const express = require('express');
-const app = express();
-const mongoose=require('mongoose')
-const router =require('./routes/user routes.js')
-const PORT = 1456;
-const bodyparser=require('body-parser')
-const cors =require('cors')
-mongoose.connect('mongodb+srv://kbru:love1234@job2024.bnxqeyf.mongodb.net/?retryWrites=true&w=majority&appName=job2024').then(
-    ()=>{console.log('connected');
+const express=require( "express");
+const cookieParser =require("cookie-parser");
+const cors =require("cors");
+const userRoute=require( "../routes/userroute.js");
+const jobRoute =require("../routes/jobRoute.js");
+const companyRoute=require ("../routes/companyRoute.js");
+const applicationRoute=require ("../routes/applicationRoute.js");
 
-}).catch(()=>{console.log('failed')})
-app.use(bodyparser.json())
-/*
+const {dotenv}= require("dotenv");
+dotenv.config();
+const{cnnectDB}=require("../db/Connect.js");
+connectDB();``
+
+const app = express();
+
+// middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 app.use(
-  bodyparser.urlencoded({
-    extended: true,
-  }),
-);*/
-app.use(bodyparser.urlencoded({ extended: true}));
-app.use(express.json())
-app.use('/user', router)
- 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+  cors({
+    origin: "http://localhost:5173/",
+    Credentials: true,
+  })
+);
+
+const PORT = process.env.PORT || 3000;
+
+app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1/company", companyRoutes);
+app.use("/api/v1/job", jobRoutes);
+app.use("/api/v1/application", applicationRoutes);
+
 app.listen(PORT, () => {
-  console.log(`Server is listening at port :${PORT}`);
+  console.log(`Server running at port ${PORT}`);
 });

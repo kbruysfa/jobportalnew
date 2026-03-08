@@ -1,49 +1,149 @@
-const jobmodel=require('../model/job model.js')
-const createjobs=async(req,res)=>{
-    const jobs=new job({ jobpostion:req.body.jobpostion,
-        vacancynumber:req.body.vacancynumber, 
-        vacanctspace:req.body.vacanctspace,
-        jobdescripition:req.body.jobdescripition,
-        location:req.body.location,
-        Deadline:req.body.Deadline,
-        education:req.body.education,
-        skills:req.body.skills,
-        exprerience:req.body.exprerience,
-        jobtype:req.body.jobtype,
-        salary:req.body.salary,
-        Salarytype:req.body.Salarytype
-})
-try {
-   
-    if(!jobpostion ||!vacancynumber||!vacanctspace||!jobdescripition||!location||!Deadline||!education||!skills||!exprerience||!jobtype||!salary||!Salarytyp){
-        res.statiues(201).send("please fill all the required fields") 
+const { JobModal } = require("../modals/jobmodel.js");
 
-}
-   await jobs.save()
-}
+export const createJob = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      jobType,
+      position,
+      companyID,
+      experience,
+    } = req.body;
 
- catch (err) {
-   res.statue(201).json({msg:'un able to save'})}
-}
-const updatejobs=async(req,res,next)=>{
-    const _id=req.parms.id;
-    const jobs=job.findbyIDandUPDATE({_id,new:true})
-    try {
-        await jobs.save()
-        res.statues(201).json(jobs)
-        res.statues(201).send($jobs+'updated successfully')
-    } catch (err) {
-        res.statues(404).send('unable to save')
+    // Curent Login User ID
+
+    const userID = req.id;
+
+    if (
+      !title ||
+      !description ||
+      !salary ||
+      !requirements ||
+      !location ||
+      !jobType ||
+      !position ||
+      !companyID ||
+      !experience
+    ) {
+      return res.status(400).json({
+        message: "Something is missing",
+        success: false,
+      });
     }
-}
-const deletejobs=async(req,res,next)=>{
-    const _id=req.parms.id;
-    const jobs=job.findbyIDandUPDATE({_id,new:true})
-    try {
-        await jobs.save()
-        res.statues(201).json(jobs)
-        res.statues(201).send($jobs+'updated successfully')
-    } catch (err) {
-        res.statues(404).send('unable to save')
+
+    let job = await JobModal.create({
+      title,
+      description,
+      experience,
+      requirements: Array.isArray(requirements)
+        ? requirements
+        : requirements.split(","),
+      salary: Number(salary),
+      location,
+      jobType,
+      position,
+      company: companyID,
+      createdBy: userID,
+    });
+
+    return res.status(200).json({
+      message: "New Job Created Succesfully",
+      success: false,
+      job,
+    });
+  } catch (error) {
+    console.error(error); // Log the error to the console for debugging
+    return res.status(400).json({
+      message: error.message || "Something went wrong",
+      success: false,
+    });
+  }
+};
+
+export const getAllJob = async (req, res) => {
+  try {
+    const keyword = req.query.keyword || "";
+    const query = {
+      $or: [
+        { title: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+      ],
+    };
+
+    const jobs = await JobModal.find(query)
+      .populate({ path: "company" })
+      .sort({ createdAt: -1 });
+    if (!jobs) {
+      return res.status(404).json({
+        message: "Jobs Not Found",
+        success: false,
+      });
     }
-}
+
+    return res.status(200).json({
+      message: "Jobs Fetched Succesfully",
+      success: true,
+      jobs,
+    });
+  } catch (error) {
+    console.error(error); // Log the error to the console for debugging
+    return res.status(400).json({
+      message: error.message || "Something went wrong",
+      success: false,
+    });
+  }
+};
+
+export const getSingleJobByID = async (req, res) => {
+  try {
+    const job = await JobModal.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({
+        message: "Job Not Found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Job Fetched Succesfully",
+      success: true,
+      job,
+    });
+  } catch (error) {
+    console.error(error); // Log the error to the console for debugging
+    return res.status(400).json({
+      message: error.message || "Something went wrong",
+      success: false,
+    });
+  }
+};
+
+export const getAdminJobs = async (req, res) => {
+  try {
+    const userId = req.id;
+
+    const job = await JobModal.find({ createdBy: req.id });
+    if (!job) {
+      return res.status(404).json({
+        message: "Job Not Found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Job Fetched Succesfully",
+      success: true,
+      job,
+    });
+  } catch (error) {
+    console.error(error); // Log the error to the console for debugging
+    return res.status(400).json({
+      message: error.message || "Something went wrong",
+      success: false,
+    });
+  }
+};

@@ -1,4 +1,4 @@
-const { JobModal } = require("../modals/jobmodel.js");
+const { JobModel } = require("../models/jobmodel.js");
 
 export const createJob = async (req, res) => {
   try {
@@ -35,7 +35,7 @@ export const createJob = async (req, res) => {
       });
     }
 
-    let job = await JobModal.create({
+    let job = await JobModel.create({
       title,
       description,
       experience,
@@ -74,7 +74,7 @@ export const getAllJob = async (req, res) => {
       ],
     };
 
-    const jobs = await JobModal.find(query)
+    const jobs = await JobModel.find(query)
       .populate({ path: "company" })
       .sort({ createdAt: -1 });
     if (!jobs) {
@@ -85,7 +85,7 @@ export const getAllJob = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: "Jobs Fetched Succesfully",
+      message: "Job Fetched Succesfully",
       success: true,
       jobs,
     });
@@ -100,7 +100,7 @@ export const getAllJob = async (req, res) => {
 
 export const getSingleJobByID = async (req, res) => {
   try {
-    const job = await JobModal.findById(req.params.id);
+    const job = await JobModel.findById(req.params.id);
     if (!job) {
       return res.status(404).json({
         message: "Job Not Found",
@@ -126,7 +126,7 @@ export const getAdminJobs = async (req, res) => {
   try {
     const userId = req.id;
 
-    const job = await JobModal.find({ createdBy: req.id });
+    const job = await JobModel.find({ createdBy: req.id });
     if (!job) {
       return res.status(404).json({
         message: "Job Not Found",

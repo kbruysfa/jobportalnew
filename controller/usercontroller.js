@@ -1,4 +1,4 @@
- const userModal  =require ("../modals/usermodel.js");
+ const userModel  =require ("../models/usermodel.js");
 const bcrypt =require( "bcryptjs");
 const jwt =require( "jsonwebtoken");
 
@@ -13,7 +13,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const userEmail = await userModal.findOne({ email });
+    const userEmail = await userModel.findOne({ email });
 
     if (userEmail) {
       return res.status(400).json({
@@ -24,7 +24,7 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let user = new userModal({
+    let user = new userModel({
       fullName,
       email,
       password: hashedPassword,
@@ -60,7 +60,7 @@ export const login = async (req, res) => {
 
     // Compare/Check Email is Already Exist
 
-    const userEmail = await userModal.findOne({ email });
+    const userEmail = await userModel.findOne({ email });
 
     if (!userEmail) {
       return res.status(400).json({
@@ -146,7 +146,7 @@ export const updateProfile = async (req, res) => {
     let skillsArr = Array.isArray(skills) ? skills : skills.split(",");
     let userID = req.id;
 
-    let user = await userModal.findById(userID);
+    let user = await userModel.findById(userID);
     if (!user) {
       return res.status(400).json({
         message: "User not found",
